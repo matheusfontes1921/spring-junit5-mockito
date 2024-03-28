@@ -47,5 +47,6 @@ public class UsersControllerWebLayerTest {
         Assertions.assertEquals(userDetailsRequestModel.getLastName(), createdUser.getLastName(),"The last name is incorrect");
         Assertions.assertEquals(userDetailsRequestModel.getEmail(),createdUser.getEmail(),"The email is incorrect");
         Assertions.assertNotNull(createdUser.getUserId(),"User id should not be false");
+        Assertions.assertNotEquals(userDetailsRequestModel.getPassword(), createdUser.getFirstName(),"Sua senha não pode ser seu nome");
     }
 }
