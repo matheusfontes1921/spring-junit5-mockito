@@ -88,7 +88,7 @@ public class UsersControllerWebLayerTest {
     void testCreateUser_whenFirstNameIsShorterThanTwoCharacters_returns400StatusCode() throws Exception {
         userDetailsRequestModel.setFirstName("B");
         RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/users").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsString(userDetailsRequestModel));
-
+        /* Requestbuilder = este trecho de código está construindo uma requisição HTTP POST para o endpoint "/users", com um corpo no formato JSON representando o objeto userDetailsRequestModel, que é um modelo de dados usado pela aplicação */
         //Act
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
 
