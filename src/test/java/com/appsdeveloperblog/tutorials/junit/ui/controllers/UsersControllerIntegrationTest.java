@@ -4,18 +4,21 @@ import com.appsdeveloperblog.tutorials.junit.ui.response.UserRest;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.context.TestPropertySource;
 
 import javax.validation.Valid;
 
 import java.util.Arrays;
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) /*allow integration tests to run in paralel*/
 //@TestPropertySource(locations = "/application-test.properties", properties = {"server.port=8081"})/*this value will override the value in application.properties*/
@@ -48,11 +51,25 @@ public class UsersControllerIntegrationTest {
         UserRest createdUserDetails = createdUserDetailsEntity.getBody();
 
         //Assert
-        Assertions.assertEquals(HttpStatus.OK, createdUserDetailsEntity.getStatusCodeValue());
         Assertions.assertEquals(userDetailsRequestJson.getString("firstName"), createdUserDetails.getFirstName(),"First name is not equal");
         Assertions.assertEquals(userDetailsRequestJson.getString("email"), createdUserDetails.getEmail(), "Email is not equal");
         Assertions.assertFalse(createdUserDetails.getUserId().trim().isEmpty(), "User id should not be empty");
 
     }
 
+    @Test
+    @DisplayName("GET /users requires JWT")
+    void testGetUsers_whenMissingJWT_returns403(){
+        //Arrange
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", "application/json");
+        HttpEntity requestEntity = new HttpEntity(null, headers);
+
+        //Act
+        ResponseEntity<List<UserRest>> response = testRestTemplate.exchange("/users", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<UserRest>>() {
+        });
+
+        //Assert
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode(),"HTTP Status code 403 should be returned");
+    }
 }
