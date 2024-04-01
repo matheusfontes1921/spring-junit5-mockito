@@ -22,6 +22,7 @@ import java.util.List;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) /*allow integration tests to run in paralel*/
 //@TestPropertySource(locations = "/application-test.properties", properties = {"server.port=8081"})/*this value will override the value in application.properties*/
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UsersControllerIntegrationTest {
     /*annotation and variable created to verify the current server port value*/
     @Value("${server.port}")
@@ -30,6 +31,7 @@ public class UsersControllerIntegrationTest {
     private int localServerPort;
     @Autowired
     private TestRestTemplate testRestTemplate;
+    private String authorizationToken;
     @Test
     @DisplayName("User can be created")
     @Order(1)
@@ -88,11 +90,30 @@ public class UsersControllerIntegrationTest {
 
         //Act
         ResponseEntity response = testRestTemplate.postForEntity("/users/login", request, null);
+        authorizationToken = response.getHeaders().getValuesAsList(SecurityConstants.HEADER_STRING).get(0);
 
         //Arrange
         Assertions.assertEquals(HttpStatus.OK,response.getStatusCode(), "http status code should be 200");
-        Assertions.assertNotNull(response.getHeaders().getValuesAsList(SecurityConstants.HEADER_STRING).get(0),"Response should contain Authorization header with JWT");
+        Assertions.assertNotNull(authorizationToken,"Response should contain Authorization header with JWT");
         Assertions.assertNotNull(response.getHeaders().getValuesAsList("UserID").get(0), "Response should contain an user id in a response header");
+    }
 
+    @Test
+    @Order(4)
+    @DisplayName("GET /users works")
+    void testGetUsers_whenValidJWTProvided_returnsUsers(){
+        //Arrange
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setBearerAuth(authorizationToken);
+        HttpEntity requestEntity = new HttpEntity(headers);
+
+        //Act
+        ResponseEntity<List<UserRest>> response = testRestTemplate.exchange("/users", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<UserRest>>() {
+        });
+
+        //Arrange
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode(),"HTTP Status code should be 200");
+        Assertions.assertTrue(response.getBody().size() == 1, "Should be exactly 1 user in the list");
     }
 }
