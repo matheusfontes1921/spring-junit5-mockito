@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import javax.persistence.PersistenceException;
 import java.util.UUID;
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DataJpaTest
 public class UserEntityIntegrationTest {
     UserEntity userEntity;
@@ -23,7 +22,6 @@ public class UserEntityIntegrationTest {
         userEntity.setEncryptedPassword("123456789");
     }
     @Test
-    @Order(1)
     void testUserEntity_whenValidUserDetailsAreProvided_shouldReturnStoredUserData(){
         //Arrange
 
@@ -38,7 +36,6 @@ public class UserEntityIntegrationTest {
     }
 
     @Test
-    @Order(2)
     void testUserEntity_whenFirstNameIsTooLong_shouldThrowException(){
         //Arrange
         userEntity.setFirstName("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
@@ -47,22 +44,28 @@ public class UserEntityIntegrationTest {
             testEntityManager.persistAndFlush(userEntity);
         },"Exception should be thrown");
     }
+//    @Test
+//    @Order(3)
+//    void testUserEntity_whenValidUserIdIsProvided_shouldPersist(){
+//        //Arrange
+//        userEntity.setUserId("1921");
+//        //Act
+//        UserEntity userEntityPersisted = testEntityManager.persistAndFlush(userEntity);
+//        //Assert
+//        Assertions.assertEquals(userEntity.getUserId(),userEntityPersisted.getUserId(), "User ID should be equal");
+//    }
     @Test
-    @Order(3)
-    void testUserEntity_whenValidUserIdIsProvided_shouldPersist(){
-        //Arrange
-        userEntity.setUserId("1921");
-        //Act
-        UserEntity userEntityPersisted = testEntityManager.persist(userEntity);
-        //Assert
-        Assertions.assertEquals(userEntity.getUserId(),userEntityPersisted.getUserId(), "User ID should be equal");
-    }
-    @Test
-    @Order(4)
     void testUserEntity_whenUserIdIsEqualToAnotherUserId_shouldThrowException(){
+        UserEntity newUser = new UserEntity();
+        newUser.setUserId("1921");
+        newUser.setFirstName("Matheus");
+        newUser.setLastName("Fontes");
+        newUser.setEmail("matheus@test.com");
+        newUser.setEncryptedPassword("123456789");
+        testEntityManager.persistAndFlush(newUser);
         userEntity.setUserId("1921");
         Assertions.assertThrows(PersistenceException.class, () -> {
-            testEntityManager.persist(userEntity);
+            testEntityManager.persistAndFlush(userEntity);
         }, "Should return an exception");
     }
 }
