@@ -46,6 +46,7 @@ public class UsersRepositoryTest {
         UserEntity userPersisted = usersRepository.findByUserId(userEntity.getUserId());
 
         //Assert
+        Assertions.assertNotNull(userPersisted, "There is not a single user with this ID");
         Assertions.assertEquals(userEntity.getUserId(), userPersisted.getUserId(), "User ID should be equal");
     }
 }
