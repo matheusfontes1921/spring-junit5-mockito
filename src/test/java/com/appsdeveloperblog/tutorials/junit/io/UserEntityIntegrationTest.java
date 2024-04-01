@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import javax.persistence.PersistenceException;
 import java.util.UUID;
-@DataJpaTest
+@DataJpaTest /*utomatically rolls back any database changes made during testing after the test completes. This ensures that the tests are isolated and do not affect the actual data in the database, maintaining data integrity and allowing for consistent and repeatable testing.*/
 public class UserEntityIntegrationTest {
     UserEntity userEntity;
     @Autowired
