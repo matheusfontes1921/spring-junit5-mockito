@@ -1,7 +1,13 @@
 package com.appsdeveloperblog.tutorials.junit.ui.controllers;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
+properties = {"server.port=8081", "hostname=192.168.0.2"}) /*this value will override the value in application.properties*/
 public class UsersControllerIntegrationTest {
+    @Test
+    void contextLoads() {
+
+    }
 }
