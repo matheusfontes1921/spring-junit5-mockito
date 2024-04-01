@@ -28,7 +28,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@WebMvcTest(controllers = UsersController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
+@WebMvcTest(controllers = UsersController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class}) /* designed to test controllers in the MVC (Model-View-Controller) layer*/
 //@AutoConfigureMockMvc(addFilters = false)
 //@MockBean({UsersServiceImpl.class})
 
